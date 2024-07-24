@@ -1,6 +1,3 @@
-# Consultar si hay un limite de iteraciones o son ininitas
-# terminar excel
-
 import tkinter as tk
 from tkinter import messagebox, ttk, font
 import random
