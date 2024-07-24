@@ -471,7 +471,7 @@ def simular(text_box_tiempo, text_box_iteraciones_mostrar, text_box_tiempo_apart
 
                 for i in range(37, 65):
                     filas[indice][i] = filas[indice - 1][i]
-                        
+
                 if cantidad_ocupados < 24 and filas[indice][6] != "-":
 
                     if tipo_auto == "Pequeño":
@@ -622,9 +622,7 @@ def simular(text_box_tiempo, text_box_iteraciones_mostrar, text_box_tiempo_apart
                     filas[indice][66] = 0
                     que_paso = "no_hay_cola"
 
-                print(objetos_autos)
                 auto_a_cobrar = determinar_proximo_auto_cobrar(objetos_autos)
-                print(objetos_autos[auto_a_cobrar])
                 if objetos_autos[auto_a_cobrar][0] == "Pagando":
                     filas[indice][67] = round(filas[indice - 1][67] + calcular_recaudacion(objetos_autos[auto_a_cobrar]), 2)  # Actualizar rec.
                     objetos_autos[auto_a_cobrar] = ("-", "-", "-", "-")
@@ -779,7 +777,6 @@ def determinar_proximo_auto_cobrar(automoviles):
                 prox = i
                 indiceb = indice
         indice += 1
-    #print(prox)
     return indiceb
 
 def calcular_recaudacion(auto_a_cobrar):
