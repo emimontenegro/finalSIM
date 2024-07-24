@@ -223,11 +223,11 @@ def simular(text_box_tiempo, text_box_iteraciones_mostrar, text_box_tiempo_apart
               0,  # Reloj (1)
               0,  # llegada_auto (2)
               0, "",  # RND y Tipo de auto (3, 4)
-              0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, # RND, Tiempo de estacionamiento y 28 eventos fin_estacionamiento (5, 34) (5, 26)
-              0,  # fin_cobro (35)(27)
-              0,  # fin_simulacion (36)(28)
-              "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", # 28 Estados para los 28 sectores de estacionamiento (37, 64)(29, 48)
-              "", 0,  # Estado y cola de la zona de cobro (65, 66)(49, 50)
+              0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, # RND, Tiempo de estacionamiento y 28 eventos fin_estacionamiento (5, 34) 
+              0,  # fin_cobro (35)
+              0,  # fin_simulacion (36)
+              "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", # 28 Estados para los 28 sectores de estacionamiento (37, 64)
+              "", 0,  # Estado y cola de la zona de cobro (65, 66)
               0,  # Acumulador recaudación (67)
               ],
              ["", 0, 0, 0, "", 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 
@@ -469,7 +469,10 @@ def simular(text_box_tiempo, text_box_iteraciones_mostrar, text_box_tiempo_apart
                 filas[indice][35] = filas[indice - 1][35]  # Bajar fin_cobro anterior
                 filas[indice][36] = tiempo_a_simular * 60 # Bajar fin_simulación
 
-                if cantidad_ocupados < 24:
+                for i in range(37, 65):
+                    filas[indice][i] = filas[indice - 1][i]
+                        
+                if cantidad_ocupados < 24 and filas[indice][6] != "-":
 
                     if tipo_auto == "Pequeño":
                         se_ocupo = False
@@ -619,12 +622,16 @@ def simular(text_box_tiempo, text_box_iteraciones_mostrar, text_box_tiempo_apart
                     filas[indice][66] = 0
                     que_paso = "no_hay_cola"
 
+                print(objetos_autos)
                 auto_a_cobrar = determinar_proximo_auto_cobrar(objetos_autos)
-                filas[indice][67] = round(filas[indice - 1][67] + calcular_recaudacion(objetos_autos[auto_a_cobrar]), 2)  # Actualizar rec.
-                objetos_autos[auto_a_cobrar] = ("-", "-", "-", "-")
+                print(objetos_autos[auto_a_cobrar])
+                if objetos_autos[auto_a_cobrar][0] == "Pagando":
+                    filas[indice][67] = round(filas[indice - 1][67] + calcular_recaudacion(objetos_autos[auto_a_cobrar]), 2)  # Actualizar rec.
+                    objetos_autos[auto_a_cobrar] = ("-", "-", "-", "-")
 
-                auto = determinar_proximo_auto_cobrar(objetos_autos)
-                cambiar_estado_automovil(objetos_autos, filas[indice][1], que_paso, "fin_cobro", auto)
+                if que_paso == "hay_cola":
+                    auto = determinar_proximo_auto_cobrar(objetos_autos)
+                    cambiar_estado_automovil(objetos_autos, filas[indice][1], que_paso, "fin_cobro", auto)
 
 
             elif proximo_evento[1] == "fin_estacionamiento":
@@ -767,11 +774,12 @@ def determinar_proximo_auto_cobrar(automoviles):
     indiceb = 0
     prox = ("", "", 10000000, 0)
     for i in automoviles:  # Busca el auto con menor fin_estacionamiento para cobrarle
-        if prox[2] != "-" and i[2] != "-":
+        if i[2] != "-":
             if float(prox[2]) >= float(i[2]):
                 prox = i
                 indiceb = indice
         indice += 1
+    #print(prox)
     return indiceb
 
 def calcular_recaudacion(auto_a_cobrar):
@@ -793,7 +801,12 @@ def cambiar_estado_automovil(automoviles, reloj_actual, que_paso, evento, auto):
                     i[0] = "Pagando"
 
     elif evento == "fin_cobro":
-        automoviles[auto][0] = "Pagando"
+        indice = determinar_proximo_auto_cobrar(automoviles)
+        prox = automoviles[indice]
+
+        if prox[2] != "-":
+            if reloj_actual > prox[2]:
+                    prox[0] = "Pagando"
 
 if __name__ == '__main__':
     inicializar_pantalla()
