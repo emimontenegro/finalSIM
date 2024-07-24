@@ -277,7 +277,7 @@ def simular(text_box_tiempo, text_box_iteraciones_mostrar, text_box_tiempo_apart
     for header in headers:
         table.heading(header, text=header)
 
-    while no_se_paso_de_x:  # Para recorrer cada iteración
+    while no_se_paso_de_x and iteraciones <= 100000:  # Para recorrer cada iteración
         if j % 2 == 0:
             indice = 0
         else:
@@ -705,8 +705,8 @@ def validar_entradas(text_box_tiempo, text_box_iteraciones_mostrar, text_box_tie
 
         tiempo_cobro = float(text_box_tiempo_cobro.get())
 
-        if param_j < 0:
-            mensaje_error = "Se puede mostrar a partir de la iteración 0."
+        if param_j < 0 or param_j > 100000:
+            mensaje_error = "Se puede mostrar a partir de la iteración 0, hasta la iteración 100000."
             raise ValueError()
 
         if param_i <= 0:
